@@ -31,15 +31,18 @@ def scan_xss_with_get_method(url,params,cookie,proxy):
     print('=' * 50)
     print('[-] PROCESSING')
     script_text_list=re.findall(r'script.*>.*<.*/.*script',str(params).lower())
+    script_text_list=script_text_list+re.findall(r'script.*%3e.*%3c.*/.*script',str(params).lower())
     #phan tich chuoi param thanh dict
     _params = urllib.parse.parse_qs(str(params))
     for key,value in _params.items():
         _params[key]=value[0]
-
+    #lay doan script ben trong the script
     for i in range(0,len(script_text_list)):
-        script_text_list[i]=re.sub(r'script.*>','',script_text_list[i])
+        script_text_list[i] = re.sub(r'script.*>','',script_text_list[i])
         script_text_list[i] = re.sub(r'<.*/.*script', '', script_text_list[i])
-        script_text_list[i]=script_text_list[i]
+        script_text_list[i] = re.sub(r'script.*%3e', '', script_text_list[i])
+        script_text_list[i] = re.sub(r'%3c.*/.*script', '', script_text_list[i])
+        # script_text_list[i]=script_text_list[i]
     #phan tich chuoi cookie thanh dict
     _cookie = {}
     if cookie is not None:
@@ -56,6 +59,11 @@ def scan_xss_with_get_method(url,params,cookie,proxy):
                 temp = re.findall(r'script.*>.*<.*/.*script', temp)[0]
                 temp = re.sub(r'script.*>', '', temp)
                 temp = re.sub(r'<.*/.*script', '', temp)
+                script_text_list.append(temp)
+            if re.search(r'script.*%3e.*%3c.*/.*script', temp) is not None:
+                temp = re.findall(r'script.*%3e.*%3ac.*/.*script', temp)[0]
+                temp = re.sub(r'script.*%3e', '', temp)
+                temp = re.sub(r'%3c.*/.*script', '', temp)
                 script_text_list.append(temp)
     else:
         _cookie = None
@@ -87,6 +95,11 @@ def scan_xss_with_post_method(url,params,cookie,proxy):
             temp=re.sub(r'script.*>','',temp)
             temp=re.sub(r'<.*/.*script','',temp)
             script_text_list.append(temp)
+        if re.search(r'script.*%3e.*%3c.*/.*script', temp) is not None:
+            temp = re.findall(r'script.*%3e.*%3ac.*/.*script', temp)[0]
+            temp = re.sub(r'script.*%3e', '', temp)
+            temp = re.sub(r'%3c.*/.*script', '', temp)
+            script_text_list.append(temp)
 
     # phan tich chuoi cookie thanh dict
     _cookie = {}
@@ -104,6 +117,11 @@ def scan_xss_with_post_method(url,params,cookie,proxy):
                 temp = re.findall(r'script.*>.*<.*/.*script', temp)[0]
                 temp = re.sub(r'script.*>', '', temp)
                 temp = re.sub(r'<.*/.*script', '', temp)
+                script_text_list.append(temp)
+            if re.search(r'script.*%3e.*%3c.*/.*script', temp) is not None:
+                temp = re.findall(r'script.*%3e.*%3ac.*/.*script', temp)[0]
+                temp = re.sub(r'script.*%3e', '', temp)
+                temp = re.sub(r'%3c.*/.*script', '', temp)
                 script_text_list.append(temp)
     else:
         _cookie = None
@@ -145,6 +163,11 @@ def scan_xss_with_cookie(url,cookie):
             temp = re.findall(r'script.*>.*<.*/.*script', temp)[0]
             temp = re.sub(r'script.*>', '', temp)
             temp = re.sub(r'<.*/.*script', '', temp)
+            script_text_list.append(temp)
+        if re.search(r'script.*%3e.*%3c.*/.*script', temp) is not None:
+            temp = re.findall(r'script.*%3e.*%3ac.*/.*script', temp)[0]
+            temp = re.sub(r'script.*%3e', '', temp)
+            temp = re.sub(r'%3c.*/.*script', '', temp)
             script_text_list.append(temp)
 
     print('=' * 50)
